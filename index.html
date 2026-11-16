@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Prototipo de portal de servicios migratorios">
+  <title>Migra | Servicios migratorios</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
+
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #162b3c;
+  background: #f4f7f6;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+
+.app-shell { min-height: 100vh; display: flex; }
+.sidebar { width: 276px; min-height: 100vh; position: fixed; inset: 0 auto 0 0; z-index: 10; display: flex; flex-direction: column; padding: 28px 20px 22px; color: #fff; background: #11394b; }
+.brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 30px; }
+.brand-mark { width: 39px; height: 39px; display: flex; align-items: end; justify-content: center; gap: 3px; padding-bottom: 10px; border-radius: 11px; background: #e7b04a; }
+.brand-mark i { width: 4px; border-radius: 2px; background: #11394b; }
+.brand-mark i:nth-child(1) { height: 10px; }.brand-mark i:nth-child(2) { height: 17px; }.brand-mark i:nth-child(3) { height: 13px; }
+.brand strong { display: block; font: 700 20px/1 'Manrope'; letter-spacing: -.5px; }
+.brand small { display: block; margin-top: 5px; color: #b7c9d0; font-size: 11px; }
+.profile-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 30px; border: 1px solid #365a68; border-radius: 9px; background: #0b2f3e; }
+.profile-switch button { padding: 8px 5px; color: #b7c9d0; border: 0; border-radius: 6px; background: transparent; font-size: 12px; }
+.profile-switch button.active { color: #11394b; background: #fff; font-weight: 700; }
+.nav-label { display: block; padding: 0 10px 10px; color: #84a2ad; font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; }
+nav button { width: 100%; display: grid; grid-template-columns: 24px 1fr 16px; align-items: center; gap: 10px; margin-bottom: 6px; padding: 13px 11px; color: #c6d4d9; text-align: left; border: 0; border-radius: 8px; background: transparent; font-size: 13px; }
+nav button > span { display: flex; }
+nav button > svg { opacity: .35; }
+nav button:hover { background: #17475a; }
+nav button.active { color: #fff; background: #1d5367; font-weight: 600; box-shadow: inset 3px 0 #e7b04a; }
+nav button.active > span { color: #e7b04a; }
+.sidebar-help { display: grid; grid-template-columns: 27px 1fr 16px; align-items: center; gap: 9px; padding: 15px 12px; margin-top: auto; border: 1px solid #365a68; border-radius: 10px; background: #174457; }
+.sidebar-help > span { color: #e7b04a; }
+.sidebar-help strong, .sidebar-help small { display: block; }.sidebar-help strong { font-size: 12px; }.sidebar-help small { margin-top: 3px; color: #9db5be; font-size: 9px; line-height: 1.3; }
+.sidebar-footer { padding: 20px 10px 0; color: #7898a4; font-size: 9px; line-height: 1.5; }
+.staff-access { width: 100%; display: grid; grid-template-columns: 25px 1fr 16px; align-items: center; gap: 9px; padding: 13px 11px; margin-top: 9px; color: #dce6e8; text-align: left; border: 1px solid #365a68; border-radius: 9px; background: transparent; }
+.staff-access > span:first-child { display: flex; color: #e7b04a; }
+.staff-access strong,.staff-access small { display: block; }.staff-access strong { font-size: 11px; }.staff-access small { margin-top: 3px; color: #84a2ad; font-size: 9px; }
+.staff-access.active,.staff-access:hover { border-color: #e7b04a; background: #17475a; }
+.workspace { min-height: 100vh; width: calc(100% - 276px); margin-left: 276px; display: flex; flex-direction: column; }
+.topbar { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 52px; border-bottom: 1px solid #dce5e3; background: rgba(255,255,255,.9); }
+.breadcrumb { color: #789099; font-size: 12px; }.breadcrumb span { padding: 0 9px; color: #c2cccf; }
+.account-button { display: flex; align-items: center; gap: 9px; color: #203c4a; border: 0; background: transparent; text-align: left; }
+.account-button > span:first-child { display: grid; place-items: center; width: 34px; height: 34px; color: #2b6a77; border-radius: 50%; background: #e7eff0; }
+.account-button small, .account-button strong { display: block; }.account-button small { color: #8a9da4; font-size: 9px; }.account-button strong { margin-top: 2px; font-size: 11px; }
+.mobile-brand { display: none; }
+main { width: min(1100px, calc(100% - 80px)); margin: 0 auto; flex: 1; padding: 52px 0 70px; }
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+.eyebrow { display: block; margin-bottom: 9px; color: #27717c; font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 10px; font: 700 34px/1.2 'Manrope'; color: #183344; letter-spacing: -1px; }
+.page-header p { margin: 0; color: #6c8087; font-size: 14px; }
+.step-pill { display: flex; align-items: center; gap: 7px; padding: 7px 12px 7px 7px; color: #59727b; border: 1px solid #d8e2e1; border-radius: 20px; background: #fff; font-size: 11px; }
+.step-pill span { display: grid; place-items: center; width: 22px; height: 22px; color: #fff; border-radius: 50%; background: #28717d; font-weight: 700; }
+.card { border: 1px solid #dce5e3; border-radius: 12px; background: #fff; box-shadow: 0 6px 20px rgba(23,52,64,.04); }
+.search-card { padding: 28px 30px 24px; }
+.card-title { display: flex; align-items: center; gap: 14px; margin-bottom: 27px; }
+.title-icon { width: 40px; height: 40px; display: grid; place-items: center; flex: none; color: #28717d; border-radius: 9px; background: #e8f0f0; }
+.card-title h2, .results-head h2 { margin-bottom: 4px; font: 700 17px/1.3 'Manrope'; color: #1c3947; }
+.card-title p { margin: 0; color: #7b8f95; font-size: 11px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.form-grid.two { grid-template-columns: repeat(2, 1fr); }
+.field { display: block; }
+.field > span { display: block; margin-bottom: 7px; color: #354e59; font-size: 11px; font-weight: 600; }
+.field-control, .field input { width: 100%; height: 45px; display: flex; align-items: center; justify-content: space-between; padding: 0 13px; color: #263f4b; border: 1px solid #ccd9d8; border-radius: 7px; outline: none; background: #fff; font-size: 12px; }
+.field-control .placeholder, .field input::placeholder { color: #96a5aa; }
+.field input:focus { border-color: #28717d; box-shadow: 0 0 0 3px #28717d18; }
+.card-action { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; margin-top: 24px; border-top: 1px solid #e7edec; }
+.card-action > span { color: #8a9ca2; font-size: 10px; }
+.primary-button, .secondary-button { display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 7px; font-size: 11px; font-weight: 700; }
+.primary-button { min-height: 42px; padding: 0 18px; color: #fff; border: 0; background: #176575; box-shadow: 0 4px 10px #17657525; }
+.primary-button:hover { background: #0f5260; }
+.secondary-button { min-height: 38px; padding: 0 16px; color: #176575; border: 1px solid #abc1c4; background: transparent; }
+.empty-note { display: flex; align-items: center; gap: 18px; max-width: 660px; padding: 30px 12px; margin: 25px auto 0; }
+.note-illustration { width: 54px; height: 54px; display: grid; place-items: center; flex: none; color: #849da2; border: 1px dashed #a9babc; border-radius: 50%; }
+.note-illustration svg { width: 24px; height: 24px; }
+.empty-note strong { display: block; margin-bottom: 5px; color: #4b646d; font-size: 12px; }.empty-note p { margin: 0; color: #819398; font-size: 11px; line-height: 1.5; }
+.results-card { padding: 26px 30px; margin-top: 22px; }
+.results-head { display: flex; align-items: start; justify-content: space-between; margin-bottom: 20px; }.results-head .eyebrow { margin-bottom: 5px; }
+.text-button { color: #27717c; border: 0; background: transparent; font-size: 11px; font-weight: 700; }
+.date-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.date-option { display: grid; grid-template-columns: 1fr 2fr; align-items: center; padding: 14px; color: #61777f; text-align: left; border: 1px solid #dbe5e3; border-radius: 8px; background: #fff; }
+.date-option span { font-size: 10px; text-transform: uppercase; }.date-option strong { font-size: 20px; color: #264653; }.date-option small { grid-column: 1/-1; margin-top: 7px; font-size: 9px; }
+.date-option.active { border-color: #27717c; background: #f1f8f7; }
+.compact { padding-bottom: 20px; }
+.appointment-card { overflow: hidden; margin-top: 22px; border: 1px solid #cfdedc; border-radius: 12px; background: #fff; box-shadow: 0 8px 24px #1734400a; }
+.appointment-status { display: flex; align-items: center; gap: 11px; padding: 15px 24px; color: #205846; border-bottom: 1px solid #d7e6e1; background: #eef8f4; }
+.appointment-status > span { display: grid; place-items: center; width: 27px; height: 27px; color: #fff; border-radius: 50%; background: #318160; }
+.appointment-status small,.appointment-status strong { display: block; }.appointment-status small { font-size: 9px; opacity: .75; }.appointment-status strong { font-size: 12px; }.appointment-status b { margin-left: auto; font-size: 11px; }
+.appointment-body { display: grid; grid-template-columns: 1fr 260px; }
+.appointment-main { padding: 26px; }.appointment-main h2 { margin-bottom: 24px; font: 700 18px 'Manrope'; }
+.detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.detail-grid > div { display: flex; gap: 9px; color: #27717c; }.detail-grid small,.detail-grid strong { display: block; }.detail-grid small { margin-bottom: 4px; color: #8b9ca2; font-size: 9px; }.detail-grid strong { color: #3a515c; font-size: 10px; }
+.appointment-body aside { padding: 25px; border-left: 1px solid #e0e8e6; background: #fafcfc; }.appointment-body aside strong { font-size: 12px; }.appointment-body aside p { margin: 8px 0 15px; color: #71868d; font-size: 10px; line-height: 1.5; }
+.horizontal { display: grid; grid-template-columns: 1fr 1.35fr; align-items: end; gap: 30px; }.horizontal .card-title { margin: 0; }
+.inline-search { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
+.status-layout { display: grid; grid-template-columns: 1.6fr .8fr; gap: 18px; margin-top: 22px; }
+.timeline-card, .summary-card { padding: 26px; }.status-badge { padding: 6px 10px; color: #9a6517; border-radius: 12px; background: #fff4d9; font-size: 9px; font-weight: 700; }
+.timeline { margin-top: 25px; }.timeline-step { position: relative; display: grid; grid-template-columns: 31px 1fr; gap: 12px; min-height: 65px; color: #89999e; }
+.timeline-step:not(:last-child)::before { content:""; position:absolute; left: 14px; top: 29px; bottom: 0; width: 1px; background: #d4dfdd; }
+.timeline-marker { z-index: 1; width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #cfdbd9; border-radius: 50%; background: #fff; font-size: 10px; }
+.timeline-step.complete .timeline-marker { color: #fff; border-color: #28717d; background: #28717d; }.timeline-step.complete:not(:last-child)::before { background: #28717d; }
+.timeline-step strong,.timeline-step span { display: block; }.timeline-step strong { color: #3c535d; font-size: 11px; }.timeline-step span { margin-top: 3px; font-size: 9px; }.timeline-step p { margin: 5px 0 0; color: #6f848c; font-size: 9px; }
+.summary-card h3 { margin-bottom: 19px; font: 700 15px 'Manrope'; }.summary-card dl { margin: 0; }.summary-card dl div { padding: 11px 0; border-bottom: 1px solid #e8eeed; }.summary-card dt { color: #89999e; font-size: 9px; }.summary-card dd { margin: 4px 0 0; color: #405761; font-size: 11px; font-weight: 600; }
+.info-box { display: flex; gap: 9px; padding: 12px; margin-top: 18px; color: #27717c; border-radius: 7px; background: #edf5f5; }.info-box p { margin: 0; color: #57727a; font-size: 9px; line-height: 1.5; }
+.login-layout { min-height: 560px; display: grid; grid-template-columns: 1fr 440px; align-items: center; gap: 80px; }
+.login-intro { max-width: 500px; }
+.staff-seal { width: 54px; height: 54px; display: grid; place-items: center; margin-bottom: 25px; color: #fff; border-radius: 14px; background: #176575; box-shadow: 0 8px 20px #1765752e; }
+.login-intro h1 { max-width: 390px; font-size: 40px; }
+.login-intro > p { color: #6d838b; font-size: 14px; line-height: 1.7; }
+.login-intro ul { padding: 8px 0 0; margin: 0; list-style: none; }
+.login-intro li { display: flex; align-items: center; gap: 10px; padding: 7px 0; color: #405a64; font-size: 12px; }
+.login-intro li span { width: 22px; height: 22px; display: grid; place-items: center; color: #28717d; border-radius: 50%; background: #e4f0ef; }
+.login-intro li svg { width: 13px; }
+.security-note { max-width: 410px; display: flex; gap: 10px; padding: 14px; margin-top: 24px; color: #8a651e; border: 1px solid #ead8ae; border-radius: 8px; background: #fff9eb; }
+.security-note span { font-size: 10px; line-height: 1.5; }
+.login-card { padding: 34px; box-shadow: 0 15px 45px rgba(23,52,64,.09); }
+.login-card-head { display: flex; align-items: center; gap: 14px; padding-bottom: 25px; margin-bottom: 24px; border-bottom: 1px solid #e4ebea; }
+.login-card-head h2 { margin: 0 0 4px; font: 700 21px 'Manrope'; }.login-card-head p { margin: 0; color: #84969c; font-size: 11px; }
+.login-card form { display: grid; gap: 18px; }
+.login-options { display: flex; align-items: center; justify-content: space-between; margin-top: -3px; }
+.login-options label { display: flex; align-items: center; gap: 7px; color: #60767e; font-size: 10px; }
+.login-options input { accent-color: #176575; }
+.login-options button { padding: 0; color: #27717c; border: 0; background: transparent; font-size: 10px; font-weight: 600; }
+.login-submit { width: 100%; margin-top: 4px; }
+.login-support { display: flex; align-items: center; gap: 10px; padding-top: 20px; margin-top: 24px; color: #759097; border-top: 1px solid #e4ebea; }
+.login-support p { margin: 0; font-size: 9px; line-height: 1.5; }.login-support strong { color: #536c75; }
+.staff-success { max-width: 620px; margin: 85px auto; padding: 55px; text-align: center; border: 1px solid #d7e3e0; border-radius: 14px; background: #fff; box-shadow: 0 15px 45px rgba(23,52,64,.06); }
+.success-icon { width: 58px; height: 58px; display: grid; place-items: center; margin: 0 auto 22px; color: #fff; border-radius: 50%; background: #318160; }
+.staff-success h1 { font-size: 28px; }.staff-success > p { max-width: 470px; margin: 0 auto 25px; color: #71868d; font-size: 12px; line-height: 1.6; }
+.staff-actions { display: flex; justify-content: center; gap: 10px; }
+footer { display: flex; justify-content: space-between; padding: 20px 52px; color: #8b9ba0; border-top: 1px solid #dce5e3; font-size: 9px; }
+
+@media (max-width: 900px) {
+  .sidebar { width: 84px; padding: 25px 12px; }.brand { justify-content: center; padding: 0 0 28px; }.brand > div,.profile-switch,.nav-label,nav button:not(.active),nav button > svg,.sidebar-help,.sidebar-footer { display: none; }
+  nav button.active { display: grid; grid-template-columns: 1fr; justify-items: center; padding: 13px 0; font-size: 0; box-shadow: none; }
+  .staff-access { grid-template-columns: 1fr; justify-items: center; margin-top: auto; }.staff-access > span:nth-child(2),.staff-access > svg { display: none; }
+  .workspace { width: calc(100% - 84px); margin-left: 84px; }.topbar { padding: 0 28px; }main { width: calc(100% - 50px); }
+  .horizontal { grid-template-columns: 1fr; }.status-layout { grid-template-columns: 1fr; }.appointment-body { grid-template-columns: 1fr; }.appointment-body aside { border-left: 0; border-top: 1px solid #e0e8e6; }
+  .login-layout { grid-template-columns: 1fr; gap: 35px; padding-top: 20px; }.login-intro { max-width: none; }.login-intro h1 { font-size: 34px; }
+}
+
+@media (max-width: 640px) {
+  .sidebar { display: none; }.workspace { width: 100%; margin: 0; }.topbar { height: 60px; padding: 0 18px; }.breadcrumb { display: none; }.mobile-brand { display: grid; place-items: center; width: 32px; height: 32px; color: #11394b; border: 0; border-radius: 8px; background: #e7b04a; font-weight: 800; }
+  main { width: calc(100% - 32px); padding: 34px 0 50px; }.page-header { margin-bottom: 25px; }.page-header .step-pill { display: none; }h1 { font-size: 27px; }.page-header p { line-height: 1.5; }
+  .search-card { padding: 22px 18px; }.form-grid,.form-grid.two,.date-row,.detail-grid { grid-template-columns: 1fr; }.card-action { align-items: stretch; flex-direction: column; gap: 15px; }.card-action > span { order: 2; text-align: center; }
+  .horizontal { display: block; }.horizontal .card-title { margin-bottom: 24px; }.inline-search { grid-template-columns: 1fr; }.appointment-status { padding: 14px 17px; }.appointment-status b { display: none; }.appointment-main { padding: 22px 18px; }.status-layout { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 5px; padding: 18px; text-align: center; }.account-button > span:nth-child(2) { display: none; }
+  .login-layout { display: block; }.login-intro { margin-bottom: 28px; }.login-intro h1 { font-size: 28px; }.login-intro ul,.security-note { display: none; }.login-card { padding: 25px 19px; }.login-options { align-items: flex-start; flex-direction: column; gap: 12px; }.staff-success { padding: 40px 20px; margin: 30px auto; }.staff-actions { flex-direction: column; }
+}
+
+/* Ajustes para controles nativos y navegación móvil */
+select.field-input { width:100%; height:45px; padding:0 13px; color:#263f4b; border:1px solid #ccd9d8; border-radius:7px; background:#fff; font:inherit; font-size:12px; }
+.field input { display:block; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline:3px solid #e7b04a; outline-offset:2px; }
+.view { display:none; }
+.view.active { display:block; }
+.staff-success { display:none; }
+.staff-success.active { display:block; }
+.date-option.selected { border-color:#27717c; background:#f1f8f7; box-shadow:0 0 0 2px #27717c20; }
+@media (max-width:640px) {
+  .sidebar.mobile-open { display:flex; position:fixed; width:276px; box-shadow:12px 0 35px #102f3d55; }
+  .sidebar.mobile-open .brand > div,.sidebar.mobile-open .profile-switch,.sidebar.mobile-open .nav-label,
+  .sidebar.mobile-open nav button,.sidebar.mobile-open .sidebar-help,.sidebar.mobile-open .sidebar-footer,
+  .sidebar.mobile-open .staff-access > span:nth-child(2),.sidebar.mobile-open .staff-access > svg { display:initial; }
+  .sidebar.mobile-open nav button { display:grid; grid-template-columns:24px 1fr 16px; font-size:13px; }
+  .sidebar.mobile-open .brand { justify-content:flex-start; }
+  .sidebar.mobile-open .profile-switch { display:grid; }
+  .sidebar.mobile-open .sidebar-help { display:grid; }
+  .sidebar.mobile-open .sidebar-footer { display:block; }
+  .sidebar.mobile-open .staff-access { grid-template-columns:25px 1fr 16px; }
+}
+
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <div><strong>Migra</strong><small>Servicios migratorios</small></div>
+    </div>
+    <div class="profile-switch" aria-label="Tipo de usuario">
+      <button type="button" data-profile="citizen">Ciudadano</button>
+      <button type="button" data-profile="foreign" class="active">Extranjero</button>
+    </div>
+    <nav aria-label="Servicios en línea">
+      <span class="nav-label">Servicios en línea</span>
+      <button type="button" class="active" data-view="appointments"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span>Consulta de citas <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></button>
+      <button type="button" data-view="my-appointment"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M9 9h6M9 13h4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span>Consultar mi cita <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></button>
+      <button type="button" data-view="status"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M14 3v5h4M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span>Estado de trámite <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></button>
+    </nav>
+    <div class="sidebar-help"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M9.8 9.5a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2.9-1.2 1.8M12 17h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><div><strong>¿Necesitas ayuda?</strong><small>Revisa nuestras preguntas frecuentes</small></div><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></div>
+    <button class="staff-access" type="button" data-view="staff-login">
+      <span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><span><strong>Acceso para personal</strong><small>Portal institucional</small></span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+    </button>
+    <div class="sidebar-footer">Portal oficial de servicios<br>migratorios</div>
+  </aside>
+
+  <div class="workspace">
+    <div class="topbar">
+      <button class="mobile-brand" id="mobileMenu" aria-label="Abrir menú" type="button">M</button>
+      <div class="breadcrumb">Inicio <span>/</span> <span id="breadcrumbText">Consulta de citas</span></div>
+      <button class="account-button" type="button"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><span><small>Perfil de consulta</small><strong id="profileName">Extranjero</strong></span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></button>
+    </div>
+
+    <main>
+      <section class="view active" id="view-appointments">
+        <header class="page-header">
+          <div><span class="eyebrow">Agenda de atención</span><h1>Consulta de citas</h1><p>Encuentra fechas disponibles para realizar tu trámite de manera presencial.</p></div>
+          <div class="step-pill"><span>1</span> Consulta</div>
+        </header>
+        <section class="card search-card">
+          <div class="card-title"><span class="title-icon"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span><div><h2>¿Qué trámite necesitas realizar?</h2><p>Selecciona los datos para consultar la disponibilidad.</p></div></div>
+          <div class="form-grid">
+            <label class="field"><span>Tipo de trámite</span><select class="field-input" id="procedure"><option value="">Selecciona un trámite</option><option>Renovación de permiso de residencia</option><option>Solicitud de residencia temporal</option><option>Prórroga de permanencia</option><option>Cambio de calidad migratoria</option></select></label>
+            <label class="field"><span>Sede de atención</span><select class="field-input" id="office"><option value="">Selecciona una sede</option><option>Sede Central</option><option>Sede Lima Norte</option><option>Sede Lima Sur</option></select></label>
+            <label class="field"><span>Mes de preferencia</span><select class="field-input" id="month"><option value="">Selecciona un mes</option><option>Marzo</option><option>Abril</option><option>Mayo</option><option>Junio</option></select></label>
+          </div>
+          <div class="card-action"><span>Los campos marcados son obligatorios</span><button class="primary-button" id="searchAppointments" type="button">Consultar disponibilidad <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button></div>
+          <p id="appointmentError" role="alert" style="display:none;color:#b4473d;font-size:11px;margin:14px 0 0;">Completa los tres campos para consultar.</p>
+        </section>
+        <section class="empty-note" id="appointmentEmpty"><span class="note-illustration"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span><div><strong>Planifica tu visita</strong><p>La disponibilidad se actualiza en tiempo real. No necesitas crear una cuenta para consultar.</p></div></section>
+        <section class="card results-card" id="appointmentResults" style="display:none;">
+          <div class="results-head"><div><span class="eyebrow">Resultado de búsqueda</span><h2>Próximas fechas disponibles</h2></div><button class="text-button" id="clearAppointments" type="button">Limpiar búsqueda</button></div>
+          <div class="date-row">
+            <button class="date-option selected" type="button"><span>Mar</span><strong>18</strong><small>08:30 — 12:00</small></button>
+            <button class="date-option" type="button"><span>Jue</span><strong>20</strong><small>08:30 — 12:00</small></button>
+            <button class="date-option" type="button"><span>Lun</span><strong>24</strong><small>08:30 — 12:00</small></button>
+          </div>
+          <p id="selectedDateText" style="font-size:11px;color:#60767e;margin:16px 0 0;">Fecha seleccionada: Mar 18, 08:30 — 12:00.</p>
+        </section>
+      </section>
+
+      <section class="view" id="view-my-appointment">
+        <header class="page-header"><div><span class="eyebrow">Agenda de atención</span><h1>Consulta mi cita</h1><p>Revisa los detalles, requisitos y ubicación de tu cita programada.</p></div></header>
+        <section class="card search-card compact">
+          <div class="card-title"><span class="title-icon"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M9 9h6M9 13h4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><div><h2>Ingresa los datos de tu cita</h2><p>Los encontrarás en el correo de confirmación.</p></div></div>
+          <div class="form-grid two">
+            <label class="field"><span>Código de cita</span><input id="appointmentCode" placeholder="Ej. CIT-2025-08421"></label>
+            <label class="field"><span>Número de documento</span><input id="documentNumber" placeholder="Ingresa tu documento"></label>
+          </div>
+          <div class="card-action"><span>Tu información está protegida y es confidencial.</span><button class="primary-button" id="findAppointment" type="button">Buscar mi cita <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button></div>
+          <p id="myAppointmentError" role="alert" style="display:none;color:#b4473d;font-size:11px;margin:14px 0 0;">Ingresa el código de cita y el número de documento.</p>
+        </section>
+        <section class="appointment-card" id="myAppointmentResult" style="display:none;">
+          <div class="appointment-status"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span><div><small>Estado de la cita</small><strong>Confirmada</strong></div><b>CIT-2025-08421</b></div>
+          <div class="appointment-body"><div class="appointment-main"><span class="eyebrow">Trámite programado</span><h2>Renovación de permiso de residencia</h2>
+            <div class="detail-grid">
+              <div><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg><span><small>Fecha</small><strong>18 de marzo de 2025</strong></span></div>
+              <div><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg><span><small>Hora</small><strong>09:30 a. m.</strong></span></div>
+              <div><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><circle cx="12" cy="10" r="2" stroke="currentColor" stroke-width="1.7"/></svg><span><small>Lugar</small><strong>Sede Central — Módulo 4</strong></span></div>
+            </div>
+          </div><aside><strong>Antes de asistir</strong><p>Presenta tu documento original y llega 15 minutos antes.</p><button class="secondary-button" type="button" id="requirementsButton">Ver requisitos</button><p id="requirementsText" style="display:none;">Documento de identidad original, comprobante de cita y documentos específicos de tu trámite.</p></aside></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-status">
+        <header class="page-header"><div><span class="eyebrow">Seguimiento en línea</span><h1>Consulta del estado de trámite</h1><p>Conoce el avance de tu solicitud migratoria en cualquier momento.</p></div></header>
+        <section class="card search-card horizontal">
+          <div class="card-title"><span class="title-icon"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M14 3v5h4M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span><div><h2>Busca tu expediente</h2><p>Ingresa el número asignado al iniciar tu solicitud.</p></div></div>
+          <div class="inline-search"><label class="field"><span>Número de expediente</span><input id="caseNumber" placeholder="Ej. MIG-2025-001284"></label><button class="primary-button" id="findStatus" type="button">Consultar estado <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button></div>
+          <p id="statusError" role="alert" style="display:none;color:#b4473d;font-size:11px;margin:0;">Ingresa el número de expediente.</p>
+        </section>
+        <section class="status-layout" id="statusResult" style="display:none;">
+          <div class="card timeline-card"><div class="results-head"><div><span class="eyebrow">Expediente MIG-2025-001284</span><h2>Residencia temporal</h2></div><span class="status-badge">En evaluación</span></div>
+            <div class="timeline">
+              <div class="timeline-step complete"><div class="timeline-marker"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></div><div><strong>Solicitud recibida</strong><span>04 mar 2025</span></div></div>
+              <div class="timeline-step complete"><div class="timeline-marker"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></div><div><strong>Validación de documentos</strong><span>06 mar 2025</span></div></div>
+              <div class="timeline-step complete"><div class="timeline-marker">3</div><div><strong>Evaluación migratoria</strong><span>En proceso</span><p>Tu solicitud está siendo revisada por un analista.</p></div></div>
+              <div class="timeline-step"><div class="timeline-marker">4</div><div><strong>Resolución</strong><span>Pendiente</span></div></div>
+            </div>
+          </div>
+          <aside class="card summary-card"><span class="eyebrow">Resumen</span><h3>Información del trámite</h3><dl><div><dt>Solicitante</dt><dd>María Rodríguez</dd></div><div><dt>Fecha de solicitud</dt><dd>04 mar 2025</dd></div><div><dt>Tiempo estimado</dt><dd>15 días hábiles</dd></div></dl><div class="info-box"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg><p>Te notificaremos por correo cuando exista una actualización.</p></div></aside>
+        </section>
+        <section class="empty-note" id="statusEmpty"><span class="note-illustration"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M14 3v5h4M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg></span><div><strong>Ten tu expediente a la mano</strong><p>El número aparece en el comprobante enviado a tu correo al iniciar la solicitud.</p></div></section>
+      </section>
+
+      <section class="view" id="view-staff-login">
+        <div class="login-layout" id="loginLayout">
+          <section class="login-intro"><span class="staff-seal"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><span class="eyebrow">Portal interno</span><h1>Acceso para el personal</h1><p>Gestiona la atención ciudadana y realiza el seguimiento de solicitudes desde un entorno seguro.</p>
+            <ul><li><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>Gestión centralizada de citas</li><li><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>Seguimiento de expedientes</li><li><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span>Acceso exclusivo para personal autorizado</li></ul>
+            <div class="security-note"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg><span>Este portal es de uso institucional. Toda actividad queda registrada.</span></div>
+          </section>
+          <section class="card login-card"><div class="login-card-head"><span class="title-icon"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><div><h2>Iniciar sesión</h2><p>Usa tus credenciales institucionales.</p></div></div>
+            <form id="loginForm"><label class="field"><span>Correo institucional</span><input type="email" placeholder="nombre@institucion.gob" required></label><label class="field"><span>Contraseña</span><input type="password" placeholder="Ingresa tu contraseña" required></label>
+              <div class="login-options"><label><input type="checkbox"> Mantener mi sesión iniciada</label><button type="button" id="forgotPassword">¿Olvidaste tu contraseña?</button></div>
+              <button class="primary-button login-submit" type="submit">Ingresar al portal <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button>
+            </form>
+            <div class="login-support"><span><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M9.8 9.5a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2.9-1.2 1.8M12 17h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><p><strong>¿Problemas para ingresar?</strong> Comunícate con soporte técnico interno.</p></div>
+            <p id="loginMessage" style="display:none;color:#b4473d;font-size:11px;margin:12px 0 0;"></p>
+          </section>
+        </div>
+        <section class="staff-success" id="staffSuccess"><span class="success-icon"><svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></span><span class="eyebrow">Acceso verificado</span><h1>Bienvenido al portal interno</h1><p>Tu sesión de demostración se inició correctamente. Desde aquí podrás gestionar citas y revisar expedientes asignados.</p><div class="staff-actions"><button class="primary-button" type="button">Ir al panel de gestión <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></button><button class="secondary-button" id="logoutButton" type="button">Cerrar sesión</button></div></section>
+      </section>
+    </main>
+    <footer><span>© 2025 Autoridad Nacional de Migración</span><span>Privacidad · Accesibilidad · Contacto</span></footer>
+  </div>
+</div>
+
+<script>
+const icons = {
+  calendar: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg>`,
+  ticket: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M9 9h6M9 13h4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>`,
+  file: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><path d="M14 3v5h4M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg>`,
+  help: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M9.8 9.5a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2.9-1.2 1.8M12 17h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>`,
+  user: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>`,
+  lock: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="20" height="20"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>`,
+  chevron: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="16" height="16"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>`,
+  arrow: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>`,
+  check: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>`,
+  info: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>`,
+  pin: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.7"/><circle cx="12" cy="10" r="2" stroke="currentColor" stroke-width="1.7"/></svg>`,
+  clock: `<svg aria-hidden="true" fill="none" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>`
+};
+document.querySelectorAll('[data-view]').forEach(button => {
+  button.addEventListener('click', () => showView(button.dataset.view));
+});
+function showView(view) {
+  document.querySelectorAll('.view').forEach(section => section.classList.toggle('active', section.id === `view-${view}`));
+  document.querySelectorAll('nav [data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === view));
+  document.querySelector('.staff-access').classList.toggle('active', view === 'staff-login');
+  const labels = {appointments:'Consulta de citas','my-appointment':'Consultar mi cita',status:'Estado de trámite','staff-login':'Acceso para personal'};
+  document.getElementById('breadcrumbText').textContent = labels[view];
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-profile]').forEach(button => button.addEventListener('click', () => {
+  document.querySelectorAll('[data-profile]').forEach(item => item.classList.toggle('active', item === button));
+  document.getElementById('profileName').textContent = button.dataset.profile === 'citizen' ? 'Ciudadano' : 'Extranjero';
+}));
+document.getElementById('mobileMenu').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('mobile-open'));
+
+document.getElementById('searchAppointments').addEventListener('click', () => {
+  const valid = ['procedure','office','month'].every(id => document.getElementById(id).value);
+  document.getElementById('appointmentError').style.display = valid ? 'none' : 'block';
+  if (!valid) return;
+  document.getElementById('appointmentEmpty').style.display = 'none';
+  document.getElementById('appointmentResults').style.display = 'block';
+});
+document.getElementById('clearAppointments').addEventListener('click', () => {
+  ['procedure','office','month'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('appointmentResults').style.display = 'none';
+  document.getElementById('appointmentEmpty').style.display = 'flex';
+  document.getElementById('appointmentError').style.display = 'none';
+});
+document.querySelectorAll('.date-option').forEach(button => button.addEventListener('click', () => {
+  document.querySelectorAll('.date-option').forEach(item => item.classList.toggle('selected', item === button));
+  document.getElementById('selectedDateText').textContent = `Fecha seleccionada: ${button.querySelector('span').textContent} ${button.querySelector('strong').textContent}, ${button.querySelector('small').textContent}.`;
+}));
+document.getElementById('findAppointment').addEventListener('click', () => {
+  const valid = document.getElementById('appointmentCode').value.trim() && document.getElementById('documentNumber').value.trim();
+  document.getElementById('myAppointmentError').style.display = valid ? 'none' : 'block';
+  document.getElementById('myAppointmentResult').style.display = valid ? 'block' : 'none';
+});
+document.getElementById('requirementsButton').addEventListener('click', () => {
+  const p = document.getElementById('requirementsText');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+});
+document.getElementById('findStatus').addEventListener('click', () => {
+  const valid = document.getElementById('caseNumber').value.trim();
+  document.getElementById('statusError').style.display = valid ? 'none' : 'block';
+  document.getElementById('statusResult').style.display = valid ? 'grid' : 'none';
+  document.getElementById('statusEmpty').style.display = valid ? 'none' : 'flex';
+});
+document.getElementById('loginForm').addEventListener('submit', event => {
+  event.preventDefault();
+  document.getElementById('loginLayout').style.display = 'none';
+  document.getElementById('staffSuccess').classList.add('active');
+});
+document.getElementById('logoutButton').addEventListener('click', () => {
+  document.getElementById('staffSuccess').classList.remove('active');
+  document.getElementById('loginLayout').style.display = 'grid';
+  document.getElementById('loginForm').reset();
+});
+document.getElementById('forgotPassword').addEventListener('click', () => {
+  const message = document.getElementById('loginMessage');
+  message.textContent = 'Para recuperar tu contraseña, comunícate con soporte técnico interno.';
+  message.style.display = 'block';
+});
+</script>
+</body>
+</html>
